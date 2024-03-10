@@ -28,6 +28,10 @@
 #pragma comment(lib, "d3dx9.lib")
 #pragma comment(lib, "winmm.lib") // needed for timeBeginPeriod()/timeEndPeriod()
 
+// chip - adding macros
+# define DX_PRINT(x) std::cout << x << std::endl;
+# define DX_ERROR(x) std::cerr << x << std::endl;
+
 Direct3DShaderValidatorCreate9Proc m_pDirect3DShaderValidatorCreate9;
 PSGPErrorProc m_pPSGPError;
 PSGPSampleTextureProc m_pPSGPSampleTexture;
@@ -62,7 +66,6 @@ int nResolution;
 
 char WinDir[MAX_PATH+1];
 
-
 // List of registered window classes and procedures
 // WORD classAtom, ULONG_PTR WndProcPtr
 std::vector<std::pair<WORD,ULONG_PTR>> WndProcList;
@@ -77,6 +80,8 @@ struct HexEdit {
     std::vector<BYTE> modified;
     size_t offset;
 };
+
+// index for hex edits for resolution
 
 HexEdit CreateHexEditFromResolution(int resolutionIndex) {
     HexEdit edit;
@@ -102,8 +107,23 @@ HexEdit CreateHexEditFromResolution(int resolutionIndex) {
         edit.modified = { 0x80, 0x70, 0x0D, 0x00, 0x00, 0xC7, 0x45, 0x84, 0xA0, 0x05 };  // 3440 x 1440
         edit.offset = 0;
         break;
+    case 6:
+        edit.modified = { 0x80, 0xA0, 0x05, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x84, 0x03 };  // 1400 x 900
+        edit.offset = 0;
+        break;
+    case 7:
+        edit.modified = { 0x80, 0x40, 0x06, 0x00, 0x00, 0xC7, 0x45, 0x84, 0xB0, 0x04 };  // 1600 x 1200
+        edit.offset = 0;
+        break;
+    case 8:
+        edit.modified = { 0x80, 0x00, 0x0F, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x00, 0x04 };  // 3840 x 1024
+        edit.offset = 0;
+        break;
+    case 9:
+        edit.modified = { 0x80, 0x70, 0x71, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x38, 0x04 };  // 6000 x 1080
+        break;
     default:
-        std::cerr << "Invalid resolution index." << std::endl;
+        DX_PRINT("Invalid resolution index.")
         break;
     }
 
@@ -113,29 +133,30 @@ HexEdit CreateHexEditFromResolution(int resolutionIndex) {
 void PerformHexEdit(LPBYTE lpAddress, DWORD moduleSize, const HexEdit& edit) {
     for (DWORD i = 0; i < moduleSize - commonHexEdit.size(); ++i) {
         if (memcmp(lpAddress + i, commonHexEdit.data(), commonHexEdit.size()) == 0) {
-            std::cout << "Pattern found in memory." << std::endl;
+            DX_PRINT("Pattern found in memory.")
 
             LPVOID lpAddressToWrite = lpAddress + i + edit.offset;
             SIZE_T numberOfBytesWritten;
             BOOL result = WriteProcessMemory(GetCurrentProcess(), lpAddressToWrite, edit.modified.data(), edit.modified.size(), &numberOfBytesWritten);
             if (!result || numberOfBytesWritten != edit.modified.size()) {
-                std::cerr << "Failed to write memory." << std::endl;
+                DX_ERROR("Failed to write memory.")
                 return;
             }
-            std::cout << "Hex edited successfully." << std::endl;
-            return;
+            DX_PRINT("Hex edited successfully.")
+           return;
         }
     }
-    std::cout << "Pattern not found in memory." << std::endl;
+    DX_PRINT("Pattern not found in memory.")
 }
 
 void PerformHexEdits() {
     HMODULE hModule = GetModuleHandle(NULL);
     if (hModule == NULL) {
-        std::cerr << "Failed to get module handle." << std::endl;
+        DX_ERROR("Failed to get module handle.")
         return;
     }
 
+    // get the module information 
     LPBYTE lpAddress = reinterpret_cast<LPBYTE>(hModule);
     DWORD moduleSize = 0;
     TCHAR szFileName[MAX_PATH];
@@ -143,7 +164,7 @@ void PerformHexEdits() {
         moduleSize = GetFileSize(szFileName, NULL);
     }
     if (moduleSize == 0) {
-        std::cerr << "Failed to get module information." << std::endl;
+        DX_ERROR("Failed to get module information.")
         return;
     }
 
@@ -157,13 +178,13 @@ void PerformHexEdits() {
     // Read resolution index from the INI file
     int resolutionIndex = GetPrivateProfileInt("fullscreenresolution", "fullscreenresolution", 0, path);
     if (resolutionIndex == 0) {
-        std::cerr << "Failed to read resolution index from INI file." << std::endl;
+        DX_ERROR("Failed to read resolution index from INI file.")          
         return;
     }
 
     HexEdit edit = CreateHexEditFromResolution(resolutionIndex);
     if (edit.modified.empty()) {
-        std::cerr << "Failed to create hex edit for resolution index: " << resolutionIndex << std::endl;
+       DX_ERROR("Failed to create hex edit for resolution index: ")
         return;
     }
 
@@ -182,6 +203,8 @@ struct HexEdit2 {
     std::vector<BYTE> modified2;
     size_t offset2;
 };
+
+// index for hex edits for aspect ratio 
 
 HexEdit2 CreateHexEditFromAspect(int aspectIndex) {
     HexEdit2 edit2;
@@ -208,7 +231,8 @@ HexEdit2 CreateHexEditFromAspect(int aspectIndex) {
         edit2.offset2 = 0;
         break;
     default:
-        std::cerr << "Invalid resolution index." << std::endl;
+        DX_ERROR("Invalid resolution index.")
+           
         break;
     }
 
@@ -218,29 +242,30 @@ HexEdit2 CreateHexEditFromAspect(int aspectIndex) {
 void PerformHexEdit2(LPBYTE lpAddress, DWORD moduleSize, const HexEdit2& edit2) {
     for (DWORD i = 0; i < moduleSize - edit2.modified2.size(); ++i) {
         if (memcmp(lpAddress + i, commonHexEdit2.data(), commonHexEdit2.size()) == 0) {
-            std::cout << "Pattern found in memory." << std::endl;
+            DX_ERROR("Pattern found in memory.")
 
             LPVOID lpAddressToWrite = lpAddress + i + edit2.offset2;
             SIZE_T numberOfBytesWritten;
             BOOL result = WriteProcessMemory(GetCurrentProcess(), lpAddressToWrite, edit2.modified2.data(), edit2.modified2.size(), &numberOfBytesWritten);
             if (!result || numberOfBytesWritten != edit2.modified2.size()) {
-                std::cerr << "Failed to write memory." << std::endl;
+                DX_ERROR("Failed to write memory.")
                 return;
             }
-            std::cout << "Hex edited successfully." << std::endl;
+           DX_ERROR("Hex edited successfully.")
             return;
         }
     }
-    std::cout << "Pattern not found in memory." << std::endl;
+    DX_PRINT("Pattern not found in memory.")
 }
 
 void PerformHexEdits2() {
     HMODULE hModule = GetModuleHandle(NULL);
     if (hModule == NULL) {
-        std::cerr << "Failed to get module handle." << std::endl;
-        return;
+        DX_ERROR("Failed to get module handle.")          
+         return;
     }
 
+    // Get the module information
     LPBYTE lpAddress = reinterpret_cast<LPBYTE>(hModule);
     DWORD moduleSize = 0;
     TCHAR szFileName[MAX_PATH];
@@ -248,7 +273,7 @@ void PerformHexEdits2() {
         moduleSize = GetFileSize(szFileName, NULL);
     }
     if (moduleSize == 0) {
-        std::cerr << "Failed to get module information." << std::endl;
+        DX_ERROR("Failed to get module information.")
         return;
     }
 
@@ -262,13 +287,13 @@ void PerformHexEdits2() {
     // Read resolution index from the INI file
     int aspectIndex = GetPrivateProfileInt("fullscreenaspectratio", "fullscreenaspectratio", 0, path);
     if (aspectIndex == 0) {
-        std::cerr << "Failed to read aspect index from INI file." << std::endl;
+        DX_ERROR("Failed to read aspect index from INI file.")
         return;
     }
 
     HexEdit2 edit2 = CreateHexEditFromAspect(aspectIndex);
     if (edit2.modified2.empty()) {
-        std::cerr << "Failed to create hex edit for aspect index: " << aspectIndex << std::endl;
+        DX_ERROR("Failed to create hex edit for aspect index: ")
         return;
     }
 
@@ -302,7 +327,7 @@ void PerformHexEdit3(LPBYTE lpAddress, DWORD moduleSize) {
         for (DWORD i = 0; i < moduleSize - edit3.pattern.size(); ++i) {
             if (memcmp(lpAddress + i, edit3.pattern.data(), edit3.pattern.size()) == 0) {
                 // Pattern found in memory
-                std::cout << "Pattern found in memory." << std::endl;
+                DX_PRINT("Pattern found in memory.")
 
                 // Modify memory
                 LPVOID lpAddressToWrite = lpAddress + i + edit3.offset;
@@ -312,7 +337,7 @@ void PerformHexEdit3(LPBYTE lpAddress, DWORD moduleSize) {
                     std::cerr << "Failed to write memory." << std::endl;
                     return;
                 }
-                std::cout << "Hex edited successfully." << std::endl;
+                DX_PRINT("Hex edited successfully.")
                 break;
             }
         }
@@ -324,7 +349,7 @@ void PerformHexEdits3() {
     // Get the handle to the current module
     HMODULE hModule = GetModuleHandle(NULL);
     if (hModule == NULL) {
-        std::cerr << "Failed to get module handle." << std::endl;
+       DX_ERROR("Failed to get module handle.")
         return;
     }
 
@@ -336,14 +361,13 @@ void PerformHexEdits3() {
         moduleSize = GetFileSize(szFileName, NULL);
     }
     if (moduleSize == 0) {
-        std::cerr << "Failed to get module information." << std::endl;
+        DX_ERROR("Failed to get module information.")
         return;
     }
 
     // Perform the hex edit
     PerformHexEdit3(lpAddress, moduleSize);
 }
-
 
 // chip - 3: fps 
 //=======================================================================================================================================================================================
