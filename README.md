@@ -15,6 +15,9 @@ default for resolution is 2 (1920 x 1080)
 
 defualt for aspect ratio is 0 which is (16:9) 
 
+if you would like to leave feedback please use the form provided: 
+
+https://docs.google.com/forms/d/e/1FAIpQLSe4Lx7bDtZ0R-mtTpd40HamQxvCJWbrzzJ75PnMv7HapJSVjQ/viewform?usp=sharing
 
 brought to you by Fix Enhancers 
 
