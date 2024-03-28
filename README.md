@@ -11,7 +11,9 @@ you can edit settings in d3d9.ini
 
 Default for resolution is 2 (1920 x 1080) 
 
-Default for aspect ratio is 0 which is (16:9) 
+Default for aspect ratio is 0 which is (16:9)
+
+Default for FOV is 0 which is off set it as you want
 
 if you would like to leave feedback or submit a bug please use the form provided: 
 
