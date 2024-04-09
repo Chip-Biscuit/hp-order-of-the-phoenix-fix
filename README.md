@@ -14,7 +14,7 @@ Default for resolution is 2 (1920 x 1080)
 
 Default for aspect ratio is 0 which is (16:9)
 
-Default for FOV is 0 which is off set it as you want
+Default for FOV is 0 you can change it as you like or turn off with 0 to have origional game FOV (57.295776)
 
 if you would like to leave feedback or submit a bug please use the form provided: 
 
