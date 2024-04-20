@@ -304,76 +304,6 @@ void PerformHexEdits2() {
 
 //=======================================================================================================================================================================================
 
-// chip - 3: fps 
-
-// Function to perform the hex edit
-void PerformHexEdit3(LPBYTE lpAddress, DWORD moduleSize) {
-    // Define the patterns to search for and their corresponding new values
-    struct HexEdit3 {
-        std::vector<BYTE> pattern;
-        std::vector<BYTE> newValue;
-        size_t offset; // Offset of the byte to modify within the pattern
-    };
-
-    // Define the edits
-    std::vector<HexEdit3> edits3 = {
-        // FPS unlock
-        { { 0x94, 0x31, 0xC8, 0x00, 0xD8, 0x0D, 0x40, 0xE8, 0x88, 0x00, 0xE8, 0xD7, 0xD6, 0x0D, 0x00, 0x8B, 0xC8, 0x8B, 0xFA, 0x8B, 0xC6, 0x99, 0x0F, 0xA4, 0xC2, 0x10, 0xC1, 0xE0, 0x10, 0x0B, 0xC8, 0x0B, 0xFA }, { 0x31, 0xC9, 0x31, 0xFF }, 29 },
-        { { 0x0C, 0xD8, 0x0D, 0x40, 0xE8, 0x88, 0x00, 0xE8, 0x2A, 0xD4, 0x0D, 0x00, 0x8B, 0xC8, 0x8B, 0xFA, 0x8B, 0xC6, 0x99, 0x0F, 0xA4, 0xC2, 0x10, 0xC1, 0xE0, 0x10, 0x0B, 0xC8, 0x0B, 0xFA }, { 0x31, 0xC9, 0x31, 0xFF }, 26 },
-        { { 0x6C, 0x24, 0x10, 0xD8, 0x0D, 0x40, 0xE8, 0x88, 0x00, 0xE8, 0xD8, 0xD3, 0x0D, 0x00, 0x8B, 0xC8, 0x8B, 0xFA, 0x8B, 0xC6, 0x99, 0x0F, 0xA4, 0xC2, 0x10, 0xC1, 0xE0, 0x10, 0x0B, 0xC8, 0x0B, 0xFA }, { 0x31, 0xC9, 0x31, 0xFF }, 28 },
-    };
-
-    // Iterate through the edits
-    for (const auto& edit3 : edits3) {
-        // Search for the pattern in memory
-        for (DWORD i = 0; i < moduleSize - edit3.pattern.size(); ++i) {
-            if (memcmp(lpAddress + i, edit3.pattern.data(), edit3.pattern.size()) == 0) {
-                // Pattern found in memory
-                DX_PRINT("Pattern found in memory.")
-
-                    // Modify memory
-                    LPVOID lpAddressToWrite = lpAddress + i + edit3.offset;
-                SIZE_T numberOfBytesWritten;
-                BOOL result = WriteProcessMemory(GetCurrentProcess(), lpAddressToWrite, edit3.newValue.data(), edit3.newValue.size(), &numberOfBytesWritten);
-                if (!result || numberOfBytesWritten != edit3.newValue.size()) {
-                    std::cerr << "Failed to write memory." << std::endl;
-                    return;
-                }
-                DX_PRINT("Hex edited successfully.")
-                    break;
-            }
-        }
-    }
-}
-
-// Function to perform the hex edits
-void PerformHexEdits3() {
-    // Get the handle to the current module
-    HMODULE hModule = GetModuleHandle(NULL);
-    if (hModule == NULL) {
-        DX_ERROR("Failed to get module handle.")
-            return;
-    }
-
-    // Get the module information
-    LPBYTE lpAddress = reinterpret_cast<LPBYTE>(hModule);
-    DWORD moduleSize = 0; // Placeholder for module size
-    TCHAR szFileName[MAX_PATH];
-    if (GetModuleFileNameEx(GetCurrentProcess(), hModule, szFileName, MAX_PATH)) {
-        moduleSize = GetFileSize(szFileName, NULL);
-    }
-    if (moduleSize == 0) {
-        DX_ERROR("Failed to get module information.")
-            return;
-    }
-
-    // Perform the hex edit
-    PerformHexEdit3(lpAddress, moduleSize);
-}
-
-// chip - 3: fps 
-//=======================================================================================================================================================================================
-
 //=======================================================================================================================================================================================
 // chip - 4: fov
 
@@ -1332,8 +1262,6 @@ bool WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
             PerformHexEdits();
 
             PerformHexEdits2();
-
-            PerformHexEdits3();
 
             PerformHexEdit4();
 
