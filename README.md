@@ -23,7 +23,8 @@ https://docs.google.com/forms/d/e/1FAIpQLSe4Lx7bDtZ0R-mtTpd40HamQxvCJWbrzzJ75PnM
 brought to you by Fix Enhancers 
 
 [this fix as it stands is a beta and the game is still being looked into so future updates will be posted so keep an eye out] 
-(as it stands we are still looking into FOV) 
+
+FPS uncap is being worked on at the moment and will come in the future for this game.
 
 Team: 
 
