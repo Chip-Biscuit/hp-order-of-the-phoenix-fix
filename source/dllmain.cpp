@@ -31,6 +31,8 @@
 // chip - adding macros
 # define DX_PRINT(x) std::cout << x << std::endl;
 # define DX_ERROR(x) std::cerr << x << std::endl;
+#define DX_MBPRINT(x) MessageBox(NULL, x, "Message", MB_OK);
+#define DX_MBERROR(x) MessageBox(NULL, x, "Error", MB_ICONERROR | MB_OK);
 
 Direct3DShaderValidatorCreate9Proc m_pDirect3DShaderValidatorCreate9;
 PSGPErrorProc m_pPSGPError;
@@ -380,6 +382,93 @@ void PerformHexEdit4() {
 
 // chip - 4: fov
 //=======================================================================================================================================================================================
+
+//=======================================================================================================================================================================================
+
+// chip - 5: fps 
+
+// Function to perform the hex edit
+void PerformHexEdit5(LPBYTE lpAddress, DWORD moduleSize) {
+    // Define the patterns to search for and their corresponding new values
+    struct HexEdit5 {
+        std::vector<BYTE> pattern;
+        std::vector<BYTE> newValue;
+        size_t offset; // Offset of the byte to modify within the pattern
+    };
+
+    // Define the edits
+    std::vector<HexEdit5> edits5 = {
+        // FPS animations 30fps
+        { { 0x02, 0x00, 0x00, 0x00, 0xE8, 0x8F, 0xE6, 0x75 }, { 0x01 }, 0 },
+    };
+
+    // Iterate through the edits
+    for (const auto& edit5 : edits5) {
+        // Search for the pattern in memory
+        for (DWORD i = 0; i < moduleSize - edit5.pattern.size(); ++i) {
+            if (memcmp(lpAddress + i, edit5.pattern.data(), edit5.pattern.size()) == 0) {
+                // Pattern found in memory
+                DX_PRINT("Pattern found in memory.")
+
+                    // Modify memory
+                    LPVOID lpAddressToWrite = lpAddress + i + edit5.offset;
+                SIZE_T numberOfBytesWritten;
+                DWORD oldProtect;
+                if (!VirtualProtectEx(GetCurrentProcess(), lpAddressToWrite, edit5.newValue.size(), PAGE_EXECUTE_READWRITE, &oldProtect)) {
+                    DX_ERROR("Failed to change memory protection.")
+                        return;
+                }
+
+                BOOL result = WriteProcessMemory(GetCurrentProcess(), lpAddressToWrite, edit5.newValue.data(), edit5.newValue.size(), &numberOfBytesWritten);
+                if (!result || numberOfBytesWritten != edit5.newValue.size()) {
+                    std::cerr << "Failed to write memory." << std::endl;
+                    return;
+                }
+
+                // Restore original protection
+                DWORD dummy;
+                if (!VirtualProtectEx(GetCurrentProcess(), lpAddressToWrite, edit5.newValue.size(), oldProtect, &dummy)) {
+                    DX_ERROR("Failed to restore memory protection.")
+                        return;
+                }
+
+                DX_PRINT("Hex edited successfully.")
+                    break;
+            }
+        }
+    }
+}
+
+// Function to perform the hex edits
+void PerformHexEdits5() {
+    // Get the handle to the current module
+    HMODULE hModule = GetModuleHandle(NULL);
+    if (hModule == NULL) {
+        DX_ERROR("Failed to get module handle.")
+            return;
+    }
+
+    // Get the module information
+    LPBYTE lpAddress = reinterpret_cast<LPBYTE>(hModule);
+    DWORD moduleSize = 0; // Placeholder for module size
+    TCHAR szFileName[MAX_PATH];
+    if (GetModuleFileNameEx(GetCurrentProcess(), hModule, szFileName, MAX_PATH)) {
+        moduleSize = GetFileSize(szFileName, NULL);
+    }
+    if (moduleSize == 0) {
+        DX_ERROR("Failed to get module information.")
+            return;
+    }
+
+    // Perform the hex edit
+    PerformHexEdit5(lpAddress, moduleSize);
+}
+
+// chip - 5: fps 
+// 
+//=======================================================================================================================================================================================
+
+
 
 void HookModule(HMODULE hmod);
 
@@ -1254,6 +1343,12 @@ bool WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
     {
         g_hWrapperModule = hModule;
 
+        // Load dll
+        char path[MAX_PATH];
+        GetSystemDirectoryA(path, MAX_PATH);
+        strcat_s(path, "\\d3d9.dll");
+        d3d9dll = LoadLibraryA(path);
+
         //========================================================================================================================
         //chip
 
@@ -1265,17 +1360,17 @@ bool WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
 
             PerformHexEdit4();
 
+            PerformHexEdits5();
+
+            HMODULE hFpsDll = LoadLibraryA("fps.dll");
+
         }
 
         //chip
         //========================================================================================================================
 
 
-        // Load dll
-        char path[MAX_PATH];
-        GetSystemDirectoryA(path, MAX_PATH);
-        strcat_s(path, "\\d3d9.dll");
-        d3d9dll = LoadLibraryA(path);
+       
 
         if (d3d9dll)
         {
