@@ -1362,8 +1362,6 @@ bool WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
 
             PerformHexEdits5();
 
-            HMODULE hFpsDll = LoadLibraryA("fps.dll");
-
         }
 
         //chip
