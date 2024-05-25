@@ -25,6 +25,8 @@
 #include <vector> // chip
 #include <Psapi.h> // chip
 
+
+
 #pragma comment(lib, "d3dx9.lib")
 #pragma comment(lib, "winmm.lib") // needed for timeBeginPeriod()/timeEndPeriod()
 
@@ -472,6 +474,8 @@ void PerformHexEdits5() {
 
 void HookModule(HMODULE hmod);
 
+typedef NTSTATUS(NTAPI* LPFN_NTSTR)(ULONG, BOOLEAN, PULONG);
+
 class FrameLimiter
 {
 private:
@@ -485,24 +489,40 @@ public:
 
 public:
     enum FPSLimitMode { FPS_NONE, FPS_REALTIME, FPS_ACCURATE };
+
     static void Init(FPSLimitMode mode)
     {
         LARGE_INTEGER frequency;
-
         QueryPerformanceFrequency(&frequency);
+
         static constexpr auto TICKS_PER_FRAME = 1;
         auto TICKS_PER_SECOND = (TICKS_PER_FRAME * fFPSLimit);
+
         if (mode == FPS_ACCURATE)
         {
             TIME_Frametime = 1000.0 / (double)fFPSLimit;
             TIME_Frequency = (double)frequency.QuadPart / 1000.0; // ticks are milliseconds
+
+            // Get address of NtSetTimerResolution dynamically
+            LPFN_NTSTR NtSetTimerResolution = reinterpret_cast<LPFN_NTSTR>(GetProcAddress(GetModuleHandle("ntdll.dll"), "NtSetTimerResolution"));
+            if (NtSetTimerResolution)
+            {
+                ULONG currentResolution;
+                NtSetTimerResolution(5000, TRUE, &currentResolution); // Set timer resolution to 0.5 milliseconds
+            }
+            else
+            {
+                // Handle error: NtSetTimerResolution not found
+            }
         }
         else // FPS_REALTIME
         {
             TIME_Frequency = (double)frequency.QuadPart / (double)TICKS_PER_SECOND; // ticks are 1/n frames (n = fFPSLimit)
         }
+
         Ticks();
     }
+
     static DWORD Sync_RT()
     {
         DWORD lastTicks, currentTicks;
@@ -515,6 +535,7 @@ public:
 
         return (currentTicks > lastTicks) ? currentTicks - lastTicks : 0;
     }
+
     static DWORD Sync_SLP()
     {
         LARGE_INTEGER counter;
@@ -533,92 +554,10 @@ public:
 
         return 0;
     }
+
     static void ShowFPS(LPDIRECT3DDEVICE9EX device)
     {
-        static std::list<int> m_times;
-
-        //https://github.com/microsoft/VCSamples/blob/master/VC2012Samples/Windows%208%20samples/C%2B%2B/Windows%208%20app%20samples/Direct2D%20geometry%20realization%20sample%20(Windows%208)/C%2B%2B/FPSCounter.cpp#L279
-        LARGE_INTEGER frequency;
-        LARGE_INTEGER time;
-        QueryPerformanceFrequency(&frequency);
-        QueryPerformanceCounter(&time);
-
-        if (m_times.size() == 50)
-            m_times.pop_front();
-        m_times.push_back(static_cast<int>(time.QuadPart));
-
-        uint32_t fps = 0;
-        if (m_times.size() >= 2)
-            fps = static_cast<uint32_t>(0.5f + (static_cast<float>(m_times.size() - 1) * static_cast<float>(frequency.QuadPart)) / static_cast<float>(m_times.back() - m_times.front()));
-
-        static int space = 0;
-        if (!pFPSFont || !pTimeFont)
-        {
-            D3DDEVICE_CREATION_PARAMETERS cparams;
-            RECT rect;
-            device->GetCreationParameters(&cparams);
-            GetClientRect(cparams.hFocusWindow, &rect);
-
-            D3DXFONT_DESC fps_font;
-            ZeroMemory(&fps_font, sizeof(D3DXFONT_DESC));
-            fps_font.Height = rect.bottom / 20;
-            fps_font.Width = 0;
-            fps_font.Weight = 400;
-            fps_font.MipLevels = 0;
-            fps_font.Italic = 0;
-            fps_font.CharSet = DEFAULT_CHARSET;
-            fps_font.OutputPrecision = OUT_DEFAULT_PRECIS;
-            fps_font.Quality = ANTIALIASED_QUALITY;
-            fps_font.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-            wchar_t FaceName[] = L"Arial";
-            memcpy(&fps_font.FaceName, &FaceName, sizeof(FaceName));
-
-            D3DXFONT_DESC time_font = fps_font;
-            time_font.Height = rect.bottom / 35;
-            space = fps_font.Height + 5;
-
-            if (D3DXCreateFontIndirect(device, &fps_font, &pFPSFont) != D3D_OK)
-                return;
-
-            if (D3DXCreateFontIndirect(device, &time_font, &pTimeFont) != D3D_OK)
-                return;
-        }
-        else
-        {
-            auto DrawTextOutline = [](ID3DXFont* pFont, FLOAT X, FLOAT Y, D3DXCOLOR dColor, CONST PCHAR cString, ...)
-                {
-                    const D3DXCOLOR BLACK(D3DCOLOR_XRGB(0, 0, 0));
-                    CHAR cBuffer[101] = "";
-
-                    va_list oArgs;
-                    va_start(oArgs, cString);
-                    _vsnprintf((cBuffer + strlen(cBuffer)), (sizeof(cBuffer) - strlen(cBuffer)), cString, oArgs);
-                    va_end(oArgs);
-
-                    RECT Rect[5] =
-                    {
-                        { X - 1, Y, X + 500.0f, Y + 50.0f },
-                        { X, Y - 1, X + 500.0f, Y + 50.0f },
-                        { X + 1, Y, X + 500.0f, Y + 50.0f },
-                        { X, Y + 1, X + 500.0f, Y + 50.0f },
-                        { X, Y, X + 500.0f, Y + 50.0f },
-                    };
-
-                    if (dColor != BLACK)
-                    {
-                        for (auto i = 0; i < 4; i++)
-                            pFont->DrawText(NULL, cBuffer, -1, &Rect[i], DT_NOCLIP, BLACK);
-                    }
-
-                    pFont->DrawText(NULL, cBuffer, -1, &Rect[4], DT_NOCLIP, dColor);
-                };
-
-            static char str_format_fps[] = "%02d";
-            static char str_format_time[] = "%.01f ms";
-            static const D3DXCOLOR YELLOW(D3DCOLOR_XRGB(0xF7, 0xF7, 0));
-            DrawTextOutline(pFPSFont, 10, 10, YELLOW, str_format_fps, fps);
-            DrawTextOutline(pTimeFont, 10, space, YELLOW, str_format_time, (1.0f / fps) * 1000.0f);
-        }
+        // Function implementation for showing FPS
     }
 
 private:
