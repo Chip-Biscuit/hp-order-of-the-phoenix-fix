@@ -14,7 +14,7 @@
 *   3. This notice may not be removed or altered from any source distribution.
 */
 
-// Fix Enhancers harry potter and the order of the phoenix patches added 
+// Fix Enhancers Harry Potter and the Half Blood Prince patches added 
 
 #include "d3d9.h"
 #include "d3dx9.h"
@@ -24,7 +24,9 @@
 #include <iostream> // chip  
 #include <vector> // chip
 #include <Psapi.h> // chip
-
+#include <string> //chip
+#include <sstream> //chip
+#include <iomanip> //chip
 
 
 #pragma comment(lib, "d3dx9.lib")
@@ -75,10 +77,9 @@ char WinDir[MAX_PATH + 1];
 std::vector<std::pair<WORD, ULONG_PTR>> WndProcList;
 
 //=======================================================================================================================================================================================
+// chip - 1: resolution 
 
-//chip - 1 resolution
-
-const std::vector<BYTE> commonHexEdit = { 0x80, 0x80, 0x02, 0x00, 0x00, 0xC7, 0x45, 0x84, 0xE0, 0x01 };
+const std::vector<BYTE> commonHexEdit = { 0xFF, 0xFF, 0x89, 0x95, 0x7C, 0xFF, 0xFF, 0xFF, 0xC7, 0x45, 0x80, 0x80, 0x02, 0x00, 0x00, 0xC7, 0x45, 0x84, 0xE0, 0x01 };
 
 struct HexEdit {
     std::vector<BYTE> modified;
@@ -92,39 +93,39 @@ HexEdit CreateHexEditFromResolution(int resolutionIndex) {
 
     switch (resolutionIndex) {
     case 1:
-        edit.modified = { 0x80, 0x00, 0x05, 0x00, 0x00, 0xC7, 0x45, 0x84, 0xD0, 0x02 };  // 1280 x 720
+        edit.modified = { 0xFF, 0xFF, 0x89, 0x95, 0x7C, 0xFF, 0xFF, 0xFF, 0xC7, 0x45, 0x80, 0x00, 0x05, 0x00, 0x00, 0xC7, 0x45, 0x84, 0xD0, 0x02 };  // 1280 x 720
         edit.offset = 0;
         break;
     case 2:
-        edit.modified = { 0x80, 0x80, 0x07, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x38, 0x04 };  // 1920 x 1080
+        edit.modified = { 0xFF, 0xFF, 0x89, 0x95, 0x7C, 0xFF, 0xFF, 0xFF, 0xC7, 0x45, 0x80, 0x80, 0x07, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x38, 0x04 };  // 1920 x 1080
         edit.offset = 0;
         break;
     case 3:
-        edit.modified = { 0x80, 0x00, 0x0A, 0x00, 0x00, 0xC7, 0x45, 0x84, 0xA0, 0x05 };  // 2560 x1440 
+        edit.modified = { 0xFF, 0xFF, 0x89, 0x95, 0x7C, 0xFF, 0xFF, 0xFF, 0xC7, 0x45, 0x80, 0x00, 0x0A, 0x00, 0x00, 0xC7, 0x45, 0x84, 0xA0, 0x05 };  // 2560 x1440 
         edit.offset = 0;
         break;
     case 4:
-        edit.modified = { 0x80, 0x00, 0x0F, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x70, 0x08 };  // 3840 x 2160
+        edit.modified = { 0xFF, 0xFF, 0x89, 0x95, 0x7C, 0xFF, 0xFF, 0xFF, 0xC7, 0x45, 0x80, 0x00, 0x0F, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x70, 0x08 };  // 3840 x 2160
         edit.offset = 0;
         break;
     case 5:
-        edit.modified = { 0x80, 0x70, 0x0D, 0x00, 0x00, 0xC7, 0x45, 0x84, 0xA0, 0x05 };  // 3440 x 1440
+        edit.modified = { 0xFF, 0xFF, 0x89, 0x95, 0x7C, 0xFF, 0xFF, 0xFF, 0xC7, 0x45, 0x80, 0x70, 0x0D, 0x00, 0x00, 0xC7, 0x45, 0x84, 0xA0, 0x05 };  // 3440 x 1440
         edit.offset = 0;
         break;
     case 6:
-        edit.modified = { 0x80, 0xA0, 0x05, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x84, 0x03 };  // 1440 x 900
+        edit.modified = { 0xFF, 0xFF, 0x89, 0x95, 0x7C, 0xFF, 0xFF, 0xFF, 0xC7, 0x45, 0x80, 0xA0, 0x05, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x84, 0x03 };  // 1440 x 900
         edit.offset = 0;
         break;
     case 7:
-        edit.modified = { 0x80, 0x40, 0x06, 0x00, 0x00, 0xC7, 0x45, 0x84, 0xB0, 0x04 };  // 1600 x 1200
+        edit.modified = { 0xFF, 0xFF, 0x89, 0x95, 0x7C, 0xFF, 0xFF, 0xFF, 0xC7, 0x45, 0x80, 0x40, 0x06, 0x00, 0x00, 0xC7, 0x45, 0x84, 0xB0, 0x04 };  // 1600 x 1200
         edit.offset = 0;
         break;
     case 8:
-        edit.modified = { 0x80, 0x00, 0x0F, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x00, 0x04 };  // 3840 x 1024
+        edit.modified = { 0xFF, 0xFF, 0x89, 0x95, 0x7C, 0xFF, 0xFF, 0xFF, 0xC7, 0x45, 0x80, 0x00, 0x0F, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x00, 0x04 };  // 3840 x 1024
         edit.offset = 0;
         break;
     case 9:
-        edit.modified = { 0x80, 0x70, 0x71, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x38, 0x04 };  // 6000 x 1080
+        edit.modified = { 0xFF, 0xFF, 0x89, 0x95, 0x7C, 0xFF, 0xFF, 0xFF, 0xC7, 0x45, 0x80, 0x70, 0x17, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x38, 0x04 };  // 6000 x 1080
         break;
     default:
         DX_PRINT("Invalid resolution index.")
@@ -196,10 +197,12 @@ void PerformHexEdits() {
 }
 
 // chip - 1: resolution
+//=======================================================================================================================================================================================
 
 //=======================================================================================================================================================================================
 
 // chip - 2: aspect ratio
+
 
 const std::vector<BYTE> commonHexEdit2 = { 0x39, 0x8E, 0xE3, 0x3F };
 
@@ -246,16 +249,36 @@ HexEdit2 CreateHexEditFromAspect(int aspectIndex) {
 void PerformHexEdit2(LPBYTE lpAddress, DWORD moduleSize, const HexEdit2& edit2) {
     for (DWORD i = 0; i < moduleSize - edit2.modified2.size(); ++i) {
         if (memcmp(lpAddress + i, commonHexEdit2.data(), commonHexEdit2.size()) == 0) {
-            DX_ERROR("Pattern found in memory.")
+            DX_PRINT("Pattern found in memory 2.")
 
                 LPVOID lpAddressToWrite = lpAddress + i + edit2.offset2;
             SIZE_T numberOfBytesWritten;
-            BOOL result = WriteProcessMemory(GetCurrentProcess(), lpAddressToWrite, edit2.modified2.data(), edit2.modified2.size(), &numberOfBytesWritten);
-            if (!result || numberOfBytesWritten != edit2.modified2.size()) {
-                DX_ERROR("Failed to write memory.")
+            HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
+            if (hProcess == NULL) {
+                DX_ERROR("Failed to open process for writing memory.")
                     return;
             }
-            DX_ERROR("Hex edited successfully.")
+
+            // Change page protection to allow writing
+            DWORD oldProtection;
+            if (!VirtualProtectEx(hProcess, lpAddressToWrite, edit2.modified2.size(), PAGE_EXECUTE_READWRITE, &oldProtection)) {
+                DX_ERROR("Failed to change page protection.")
+                    CloseHandle(hProcess);
+                return;
+            }
+
+            BOOL result = WriteProcessMemory(hProcess, lpAddressToWrite, edit2.modified2.data(), edit2.modified2.size(), &numberOfBytesWritten);
+            CloseHandle(hProcess);
+            if (!result || numberOfBytesWritten != edit2.modified2.size()) {
+                DX_ERROR("Failed to write memory 2.")
+                    return;
+            }
+
+            // Restore original page protection
+            DWORD dummy;
+            VirtualProtectEx(hProcess, lpAddressToWrite, edit2.modified2.size(), oldProtection, &dummy);
+
+            DX_ERROR("Hex edited successfully 2.")
                 return;
         }
     }
@@ -304,8 +327,8 @@ void PerformHexEdits2() {
     PerformHexEdit2(lpAddress, moduleSize, edit2);
 }
 
-// chip - 2: aspect ratio
 
+// chip - 2: aspect ratio
 //=======================================================================================================================================================================================
 
 //=======================================================================================================================================================================================
@@ -345,7 +368,7 @@ void PerformHexEdit4() {
     }
 
     // Define the offset to write the new float value
-    DWORD offset = 0x0088e880;
+    DWORD offset = 0x0084834C;
 
     // Open the process to write memory
     HANDLE hProcess = OpenProcess(PROCESS_VM_WRITE | PROCESS_VM_OPERATION, FALSE, GetCurrentProcessId());
@@ -387,63 +410,87 @@ void PerformHexEdit4() {
 
 //=======================================================================================================================================================================================
 
-// chip - 5: fps 
+// chip - 6: aspect ratio fix above 16:9 
 
-// Function to perform the hex edit
-void PerformHexEdit5(LPBYTE lpAddress, DWORD moduleSize) {
-    // Define the patterns to search for and their corresponding new values
-    struct HexEdit5 {
-        std::vector<BYTE> pattern;
-        std::vector<BYTE> newValue;
-        size_t offset; // Offset of the byte to modify within the pattern
-    };
 
-    // Define the edits
-    std::vector<HexEdit5> edits5 = {
-        // FPS animations 30fps
-        { { 0x02, 0x00, 0x00, 0x00, 0xE8, 0x8F, 0xE6, 0x75 }, { 0x01 }, 0 },
-    };
+const std::vector<BYTE> commonHexEdit6 = { 0x80, 0x35, 0xFA, 0x8E, 0x3C };
 
-    // Iterate through the edits
-    for (const auto& edit5 : edits5) {
-        // Search for the pattern in memory
-        for (DWORD i = 0; i < moduleSize - edit5.pattern.size(); ++i) {
-            if (memcmp(lpAddress + i, edit5.pattern.data(), edit5.pattern.size()) == 0) {
-                // Pattern found in memory
-                DX_PRINT("Pattern found in memory.")
+struct HexEdit6 {
+    std::vector<BYTE> modified6;
+    size_t offset6;
+};
 
-                    // Modify memory
-                    LPVOID lpAddressToWrite = lpAddress + i + edit5.offset;
-                SIZE_T numberOfBytesWritten;
-                DWORD oldProtect;
-                if (!VirtualProtectEx(GetCurrentProcess(), lpAddressToWrite, edit5.newValue.size(), PAGE_EXECUTE_READWRITE, &oldProtect)) {
-                    DX_ERROR("Failed to change memory protection.")
-                        return;
-                }
+// index for hex edits for aspect ratio 
 
-                BOOL result = WriteProcessMemory(GetCurrentProcess(), lpAddressToWrite, edit5.newValue.data(), edit5.newValue.size(), &numberOfBytesWritten);
-                if (!result || numberOfBytesWritten != edit5.newValue.size()) {
-                    std::cerr << "Failed to write memory." << std::endl;
-                    return;
-                }
+HexEdit6 CreateHexEditFromAspect6(int aspectIndex6) {
+    HexEdit6 edit6;
 
-                // Restore original protection
-                DWORD dummy;
-                if (!VirtualProtectEx(GetCurrentProcess(), lpAddressToWrite, edit5.newValue.size(), oldProtect, &dummy)) {
-                    DX_ERROR("Failed to restore memory protection.")
-                        return;
-                }
+    switch (aspectIndex6) {
+    case 1:
+        edit6.modified6 = { 0x80, 0x35, 0xFA, 0x8E, 0x3C };                //21:9 (2560x1080)
+        edit6.offset6 = 0;
+        break;
+    case 2:
+        edit6.modified6 = { 0x80, 0x35, 0xFA, 0x8E, 0x3C };                //21:9 (3440x1440)
+        edit6.offset6 = 0;
+        break;
+    case 3:
+        edit6.modified6 = { 0x80, 0x35, 0xFA, 0x8E, 0x3C };                //21:9 (3840x1600)
+        edit6.offset6 = 0;
+        break;
+    case 4:
+        edit6.modified6 = { 0x80, 0x35, 0xFA, 0x8E, 0x3C };                //32:10
+        edit6.offset6 = 0;
+        break;
+    default:
+        DX_ERROR("Invalid resolution index.")
 
-                DX_PRINT("Hex edited successfully.")
-                    break;
-            }
-        }
+            break;
     }
+
+    return edit6;
 }
 
-// Function to perform the hex edits
-void PerformHexEdits5() {
-    // Get the handle to the current module
+void PerformHexEdit6(LPBYTE lpAddress, DWORD moduleSize, const HexEdit6& edit6) {
+    for (DWORD i = 0; i < moduleSize - edit6.modified6.size(); ++i) {
+        if (memcmp(lpAddress + i, commonHexEdit6.data(), commonHexEdit6.size()) == 0) {
+            DX_PRINT("Pattern found in memory 2.")
+
+                LPVOID lpAddressToWrite = lpAddress + i + edit6.offset6;
+            SIZE_T numberOfBytesWritten;
+            HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
+            if (hProcess == NULL) {
+                DX_ERROR("Failed to open process for writing memory.")
+                    return;
+            }
+
+            // Change page protection to allow writing
+            DWORD oldProtection;
+            if (!VirtualProtectEx(hProcess, lpAddressToWrite, edit6.modified6.size(), PAGE_EXECUTE_READWRITE, &oldProtection)) {
+                DX_ERROR("Failed to change page protection.")
+                    CloseHandle(hProcess);
+                return;
+            }
+
+            BOOL result = WriteProcessMemory(hProcess, lpAddressToWrite, edit6.modified6.data(), edit6.modified6.size(), &numberOfBytesWritten);
+            CloseHandle(hProcess);
+            if (!result || numberOfBytesWritten != edit6.modified6.size()) {
+                DX_ERROR("Failed to write memory 2.")
+                    return;
+            }
+
+            // Restore original page protection
+            DWORD dummy;
+            VirtualProtectEx(hProcess, lpAddressToWrite, edit6.modified6.size(), oldProtection, &dummy);
+
+            DX_ERROR("Hex edited successfully 2.")
+                return;
+        }
+    }
+    DX_PRINT("Pattern not found in memory.")
+}
+
+void PerformHexEdits6() {
     HMODULE hModule = GetModuleHandle(NULL);
     if (hModule == NULL) {
         DX_ERROR("Failed to get module handle.")
@@ -452,7 +499,7 @@ void PerformHexEdits5() {
 
     // Get the module information
     LPBYTE lpAddress = reinterpret_cast<LPBYTE>(hModule);
-    DWORD moduleSize = 0; // Placeholder for module size
+    DWORD moduleSize = 0;
     TCHAR szFileName[MAX_PATH];
     if (GetModuleFileNameEx(GetCurrentProcess(), hModule, szFileName, MAX_PATH)) {
         moduleSize = GetFileSize(szFileName, NULL);
@@ -462,19 +509,122 @@ void PerformHexEdits5() {
             return;
     }
 
-    // Perform the hex edit
-    PerformHexEdit5(lpAddress, moduleSize);
+    // ini
+    char path[MAX_PATH];
+    HMODULE hm = NULL;
+    GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCSTR)&Direct3DCreate9, &hm);
+    GetModuleFileNameA(hm, path, sizeof(path));
+    strcpy(strrchr(path, '\\'), "\\d3d9.ini");
+
+    // Read resolution index from the INI file
+    int aspectIndex6 = GetPrivateProfileInt("fullscreenaspectratio", "fullscreenaspectratioFIX", 0, path);
+    if (aspectIndex6 == 0) {
+        DX_ERROR("Failed to read aspect index from INI file.")
+            return;
+    }
+
+    HexEdit6 edit6 = CreateHexEditFromAspect6(aspectIndex6);
+    if (edit6.modified6.empty()) {
+        DX_ERROR("Failed to create hex edit for aspect index: ")
+            return;
+    }
+
+    PerformHexEdit6(lpAddress, moduleSize, edit6);
 }
 
-// chip - 5: fps 
-// 
+
+// chip - 6: aspect ratio fix above 16:9
 //=======================================================================================================================================================================================
 
+//=======================================================================================================================================================================================
 
+ //chip
+// Function to perform the hex edit fps 
+void PerformHexEdit7(LPBYTE lpAddress, DWORD moduleSize) {
+    // Define the patterns to search for and their corresponding new values
+    struct HexEdit {
+        std::vector<BYTE> pattern;
+        std::vector<BYTE> newValue;
+        size_t offset; // Offset of the byte to modify within the pattern
+    };
+
+    // Define the edits
+    std::vector<HexEdit> edits = {
+
+        { { 0x95, 0xBA, 0x00, 0x02, 0x00, 0x00, 0x00, 0xE8, 0x74 }, { 0x01 }, 3 }
+    };
+
+    // Iterate through the edits
+    for (const auto& edit : edits) {
+        // Search for the pattern in memory
+        for (DWORD i = 0; i < moduleSize - edit.pattern.size(); ++i) {
+            if (memcmp(lpAddress + i, edit.pattern.data(), edit.pattern.size()) == 0) {
+                // Pattern found in memory
+                std::cout << "Pattern found in memory." << std::endl;
+
+                // Modify memory
+                LPVOID lpAddressToWrite = lpAddress + i + edit.offset;
+                DWORD oldProtect;
+
+                // Change memory protection to allow writing
+                if (!VirtualProtect(lpAddressToWrite, edit.newValue.size(), PAGE_EXECUTE_READWRITE, &oldProtect)) {
+                    std::cerr << "Failed to change memory protection." << std::endl;
+                    return;
+                }
+
+                SIZE_T numberOfBytesWritten;
+                BOOL result = WriteProcessMemory(GetCurrentProcess(), lpAddressToWrite, edit.newValue.data(), edit.newValue.size(), &numberOfBytesWritten);
+                if (!result || numberOfBytesWritten != edit.newValue.size()) {
+                    std::cerr << "Failed to write memory." << std::endl;
+                    return;
+                }
+
+                // Restore the original memory protection
+                if (!VirtualProtect(lpAddressToWrite, edit.newValue.size(), oldProtect, &oldProtect)) {
+                    std::cerr << "Failed to restore memory protection." << std::endl;
+                    return;
+                }
+
+                std::cout << "Hex edited successfully." << std::endl;
+                break;
+            }
+        }
+    }
+}
+
+// Function to perform the hex edits
+void PerformHexEdits7() {
+    // Get the handle to the current module
+    HMODULE hModule = GetModuleHandle(NULL);
+    if (hModule == NULL) {
+        std::cerr << "Failed to get module handle." << std::endl;
+        return;
+    }
+
+    // Get the module information
+    LPBYTE lpAddress = reinterpret_cast<LPBYTE>(hModule);
+    DWORD moduleSize = 0; // Placeholder for module size
+    TCHAR szFileName[MAX_PATH];
+    if (GetModuleFileNameEx(GetCurrentProcess(), hModule, szFileName, MAX_PATH)) {
+        HANDLE hFile = CreateFile(szFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (hFile != INVALID_HANDLE_VALUE) {
+            moduleSize = GetFileSize(hFile, NULL);
+            CloseHandle(hFile);
+        }
+    }
+    if (moduleSize == 0) {
+        std::cerr << "Failed to get module information." << std::endl;
+        return;
+    }
+
+    // Perform the hex edit
+    PerformHexEdit7(lpAddress, moduleSize);
+}
+//chip
+
+//=======================================================================================================================================================================================
 
 void HookModule(HMODULE hmod);
-
-typedef NTSTATUS(NTAPI* LPFN_NTSTR)(ULONG, BOOLEAN, PULONG);
 
 class FrameLimiter
 {
@@ -489,40 +639,24 @@ public:
 
 public:
     enum FPSLimitMode { FPS_NONE, FPS_REALTIME, FPS_ACCURATE };
-
     static void Init(FPSLimitMode mode)
     {
         LARGE_INTEGER frequency;
-        QueryPerformanceFrequency(&frequency);
 
+        QueryPerformanceFrequency(&frequency);
         static constexpr auto TICKS_PER_FRAME = 1;
         auto TICKS_PER_SECOND = (TICKS_PER_FRAME * fFPSLimit);
-
         if (mode == FPS_ACCURATE)
         {
             TIME_Frametime = 1000.0 / (double)fFPSLimit;
             TIME_Frequency = (double)frequency.QuadPart / 1000.0; // ticks are milliseconds
-
-            // Get address of NtSetTimerResolution dynamically
-            LPFN_NTSTR NtSetTimerResolution = reinterpret_cast<LPFN_NTSTR>(GetProcAddress(GetModuleHandle("ntdll.dll"), "NtSetTimerResolution"));
-            if (NtSetTimerResolution)
-            {
-                ULONG currentResolution;
-                NtSetTimerResolution(5000, TRUE, &currentResolution); // Set timer resolution to 0.5 milliseconds
-            }
-            else
-            {
-                // Handle error: NtSetTimerResolution not found
-            }
         }
         else // FPS_REALTIME
         {
             TIME_Frequency = (double)frequency.QuadPart / (double)TICKS_PER_SECOND; // ticks are 1/n frames (n = fFPSLimit)
         }
-
         Ticks();
     }
-
     static DWORD Sync_RT()
     {
         DWORD lastTicks, currentTicks;
@@ -535,7 +669,6 @@ public:
 
         return (currentTicks > lastTicks) ? currentTicks - lastTicks : 0;
     }
-
     static DWORD Sync_SLP()
     {
         LARGE_INTEGER counter;
@@ -554,10 +687,92 @@ public:
 
         return 0;
     }
-
     static void ShowFPS(LPDIRECT3DDEVICE9EX device)
     {
-        // Function implementation for showing FPS
+        static std::list<int> m_times;
+
+        //https://github.com/microsoft/VCSamples/blob/master/VC2012Samples/Windows%208%20samples/C%2B%2B/Windows%208%20app%20samples/Direct2D%20geometry%20realization%20sample%20(Windows%208)/C%2B%2B/FPSCounter.cpp#L279
+        LARGE_INTEGER frequency;
+        LARGE_INTEGER time;
+        QueryPerformanceFrequency(&frequency);
+        QueryPerformanceCounter(&time);
+
+        if (m_times.size() == 50)
+            m_times.pop_front();
+        m_times.push_back(static_cast<int>(time.QuadPart));
+
+        uint32_t fps = 0;
+        if (m_times.size() >= 2)
+            fps = static_cast<uint32_t>(0.5f + (static_cast<float>(m_times.size() - 1) * static_cast<float>(frequency.QuadPart)) / static_cast<float>(m_times.back() - m_times.front()));
+
+        static int space = 0;
+        if (!pFPSFont || !pTimeFont)
+        {
+            D3DDEVICE_CREATION_PARAMETERS cparams;
+            RECT rect;
+            device->GetCreationParameters(&cparams);
+            GetClientRect(cparams.hFocusWindow, &rect);
+
+            D3DXFONT_DESC fps_font;
+            ZeroMemory(&fps_font, sizeof(D3DXFONT_DESC));
+            fps_font.Height = rect.bottom / 20;
+            fps_font.Width = 0;
+            fps_font.Weight = 400;
+            fps_font.MipLevels = 0;
+            fps_font.Italic = 0;
+            fps_font.CharSet = DEFAULT_CHARSET;
+            fps_font.OutputPrecision = OUT_DEFAULT_PRECIS;
+            fps_font.Quality = ANTIALIASED_QUALITY;
+            fps_font.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+            wchar_t FaceName[] = L"Arial";
+            memcpy(&fps_font.FaceName, &FaceName, sizeof(FaceName));
+
+            D3DXFONT_DESC time_font = fps_font;
+            time_font.Height = rect.bottom / 35;
+            space = fps_font.Height + 5;
+
+            if (D3DXCreateFontIndirect(device, &fps_font, &pFPSFont) != D3D_OK)
+                return;
+
+            if (D3DXCreateFontIndirect(device, &time_font, &pTimeFont) != D3D_OK)
+                return;
+        }
+        else
+        {
+            auto DrawTextOutline = [](ID3DXFont* pFont, FLOAT X, FLOAT Y, D3DXCOLOR dColor, CONST PCHAR cString, ...)
+                {
+                    const D3DXCOLOR BLACK(D3DCOLOR_XRGB(0, 0, 0));
+                    CHAR cBuffer[101] = "";
+
+                    va_list oArgs;
+                    va_start(oArgs, cString);
+                    _vsnprintf((cBuffer + strlen(cBuffer)), (sizeof(cBuffer) - strlen(cBuffer)), cString, oArgs);
+                    va_end(oArgs);
+
+                    RECT Rect[5] =
+                    {
+                        { X - 1, Y, X + 500.0f, Y + 50.0f },
+                        { X, Y - 1, X + 500.0f, Y + 50.0f },
+                        { X + 1, Y, X + 500.0f, Y + 50.0f },
+                        { X, Y + 1, X + 500.0f, Y + 50.0f },
+                        { X, Y, X + 500.0f, Y + 50.0f },
+                    };
+
+                    if (dColor != BLACK)
+                    {
+                        for (auto i = 0; i < 4; i++)
+                            pFont->DrawText(NULL, cBuffer, -1, &Rect[i], DT_NOCLIP, BLACK);
+                    }
+
+                    pFont->DrawText(NULL, cBuffer, -1, &Rect[4], DT_NOCLIP, dColor);
+                };
+
+            static char str_format_fps[] = "%02d";
+            static char str_format_time[] = "%.01f ms";
+            static const D3DXCOLOR YELLOW(D3DCOLOR_XRGB(0xF7, 0xF7, 0));
+            DrawTextOutline(pFPSFont, 10, 10, YELLOW, str_format_fps, fps);
+            DrawTextOutline(pTimeFont, 10, space, YELLOW, str_format_time, (1.0f / fps) * 1000.0f);
+        }
     }
 
 private:
@@ -1274,13 +1489,18 @@ void HookImportedModules()
     }
 }
 
+
+
+
 bool WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
 {
     switch (dwReason)
     {
     case DLL_PROCESS_ATTACH:
+
     {
         g_hWrapperModule = hModule;
+
 
         // Load dll
         char path[MAX_PATH];
@@ -1291,23 +1511,19 @@ bool WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
         //========================================================================================================================
         //chip
 
-        if (dwReason == DLL_PROCESS_ATTACH)
-        {
-            PerformHexEdits();
 
-            PerformHexEdits2();
+        PerformHexEdits();
 
-            PerformHexEdit4();
+        PerformHexEdits2();
 
-            PerformHexEdits5();
+        PerformHexEdit4();
 
-        }
+        PerformHexEdits6();
+
+        PerformHexEdits7();
 
         //chip
         //========================================================================================================================
-
-
-       
 
         if (d3d9dll)
         {
@@ -1347,7 +1563,6 @@ bool WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
             {
                 FrameLimiter::FPSLimitMode mode = (GetPrivateProfileInt("MAIN", "FPSLimitMode", 1, path) == 2) ? FrameLimiter::FPSLimitMode::FPS_ACCURATE : FrameLimiter::FPSLimitMode::FPS_REALTIME;
                 if (mode == FrameLimiter::FPSLimitMode::FPS_ACCURATE)
-                    timeBeginPeriod(1);
 
                 FrameLimiter::Init(mode);
                 mFPSLimitMode = mode;
@@ -1412,7 +1627,6 @@ bool WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
     case DLL_PROCESS_DETACH:
     {
         if (mFPSLimitMode == FrameLimiter::FPSLimitMode::FPS_ACCURATE)
-            timeEndPeriod(1);
 
         if (d3d9dll)
             FreeLibrary(d3d9dll);
