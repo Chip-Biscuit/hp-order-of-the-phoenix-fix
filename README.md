@@ -8,6 +8,8 @@ Make sure you launch the game one time before you use this fix, go to new game o
 
 simply put the d3d9.dll and d3d9.ini and fps.dll into your game folder next to the game exe and your good to go 
 
+choose your release 60fps or 120fps if your monitor is 60hz choose 60fps if your monitor is 120hz or more choose 120fps. leave v-sync on on your pc and leave the fps at its value.
+
 you can edit settings in d3d9.ini 
 
 Default for resolution is 2 (1920 x 1080) 
