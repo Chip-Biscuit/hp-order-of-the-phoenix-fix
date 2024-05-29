@@ -335,7 +335,7 @@ void PerformHexEdit4() {
         DX_ERROR("Invalid module file path.")
             return;
     }
-    strcpy(lastBackslash + 1, "d3d9.ini");
+    strcpy_s(lastBackslash + 1, sizeof(path) - (lastBackslash - path + 1), "d3d9.ini");
 
     // Read the new float value from the INI file
     float floatNewValue = ReadFloatFromINI("FOV", "fov", path);
