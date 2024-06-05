@@ -6,7 +6,7 @@ https://github.com/ThirteenAG/d3d9-wrapper
 
 Make sure you launch the game one time before you use this fix, go to new game or continue game, go to video and make sure your resolution is 640 x 480 for the d3d9.dll to work 
 
-simply put the d3d9.dll and d3d9.ini and fps.dll into your game folder next to the game exe and your good to go 
+simply go to releases download hpootpfix120fps.zip or hpootpfix60fps.zip depending on which fps you wish the game to run at put the d3d9.dll and d3d9.ini and fps.dll into your game folder next to the game exe and your good to go 
 
 choose your release (60fps or 120fps). If your monitor is 60hz choose 60fps. If your monitor is 120hz or more choose 120fps. leave v-sync on on your pc and leave the fps at its value.
 
