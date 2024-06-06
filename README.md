@@ -4,6 +4,8 @@ This is the Harry Potter and the Order of the Phoenix d3d9 wrapper which is base
 
 https://github.com/ThirteenAG/d3d9-wrapper
 
+Please see this youtube video for an in depth tutorial on the fix - https://www.youtube.com/watch?v=VeZ-Envz9ME&t=58s
+
 Make sure you launch the game one time before you use this fix, go to new game or continue game, go to video and make sure your resolution is 640 x 480 for the d3d9.dll to work 
 
 simply go to releases download hpootpfix120fps.zip or hpootpfix60fps.zip depending on which fps you wish the game to run at put the d3d9.dll and d3d9.ini and fps.dll into your game folder next to the game exe and your good to go 
