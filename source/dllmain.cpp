@@ -125,6 +125,15 @@ HexEdit CreateHexEditFromResolution(int resolutionIndex) {
         break;
     case 9:
         edit.modified = { 0x80, 0x70, 0x71, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x38, 0x04 };  // 6000 x 1080
+        edit.offset = 0;
+        break;
+    case 10:
+        edit.modified = { 0x80, 0x00, 0x0A, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x38, 0x04 };  // 2560 x 1080
+        edit.offset = 0;
+        break;
+    case 11:
+        edit.modified = { 0x80, 0x00, 0x0F, 0x00, 0x00, 0xC7, 0x45, 0x84, 0x40, 0x06 };  // 3840 x 1600
+        edit.offset = 0;
         break;
     default:
         DX_PRINT("Invalid resolution index.")
