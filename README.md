@@ -1,9 +1,5 @@
 # hp-order-of-the-phoenix-fix
 
-This is the Harry Potter and the Order of the Phoenix d3d9 wrapper which is based from 13AG d3d9.dll wrapper
-
-https://github.com/ThirteenAG/d3d9-wrapper
-
 Please see this youtube video for an in depth tutorial on the fix                                                                              
 
 https://www.youtube.com/watch?v=VeZ-Envz9ME&t=58s
@@ -31,3 +27,7 @@ brought to you by Fix Enhancers
 Team: 
 
 Chip, JokerAlex21, Blankname.
+
+This is the Harry Potter and the Order of the Phoenix d3d9 wrapper which is based from 13AG d3d9.dll wrapper
+
+https://github.com/ThirteenAG/d3d9-wrapper
