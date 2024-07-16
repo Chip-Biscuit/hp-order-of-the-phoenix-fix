@@ -28,6 +28,4 @@ Team:
 
 Chip, JokerAlex21, Blankname.
 
-This is the Harry Potter and the Order of the Phoenix d3d9 wrapper which is based from 13AG d3d9.dll wrapper
-
-https://github.com/ThirteenAG/d3d9-wrapper
+credit to Elisha Riedlinger for the base wrapper and 13 AG.
