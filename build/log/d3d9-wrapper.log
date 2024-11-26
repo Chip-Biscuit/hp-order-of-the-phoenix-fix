@@ -1,0 +1,24 @@
+﻿  IDirect3D9Ex.cpp
+  IDirect3DCubeTexture9.cpp
+  IDirect3DDevice9Ex.cpp
+  IDirect3DIndexBuffer9.cpp
+  IDirect3DPixelShader9.cpp
+  IDirect3DQuery9.cpp
+  IDirect3DStateBlock9.cpp
+  IDirect3DSurface9.cpp
+  IDirect3DSwapChain9Ex.cpp
+  IDirect3DTexture9.cpp
+  IDirect3DVertexBuffer9.cpp
+  IDirect3DVertexDeclaration9.cpp
+  IDirect3DVertexShader9.cpp
+  IDirect3DVolume9.cpp
+  IDirect3DVolumeTexture9.cpp
+  InterfaceQuery.cpp
+  dllmain.cpp
+C:\Users\Chip\Desktop\Fixes\Source Code  Release-18-06-24 V1.0\hp-order-of-the-phoenix-fix-main\hp-order-of-the-phoenix-fix-main\source\dllmain.cpp(197,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Chip\Desktop\Fixes\Source Code  Release-18-06-24 V1.0\hp-order-of-the-phoenix-fix-main\hp-order-of-the-phoenix-fix-main\source\dllmain.cpp(306,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Chip\Desktop\Fixes\Source Code  Release-18-06-24 V1.0\hp-order-of-the-phoenix-fix-main\hp-order-of-the-phoenix-fix-main\source\dllmain.cpp(339,5): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Chip\Desktop\Fixes\Source Code  Release-18-06-24 V1.0\hp-order-of-the-phoenix-fix-main\hp-order-of-the-phoenix-fix-main\source\dllmain.cpp(1369,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Generating Code...
+     Creating library ..\data\d3d9.lib and object ..\data\d3d9.exp
+  d3d9-wrapper.vcxproj -> C:\Users\Chip\Desktop\Fixes\Source Code  Release-18-06-24 V1.0\hp-order-of-the-phoenix-fix-main\hp-order-of-the-phoenix-fix-main\data\d3d9.dll
