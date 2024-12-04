@@ -2,6 +2,8 @@
 
 Please see this youtube video for an in depth tutorial on the fix                                                                              
 
+IMPORTANT READ THE READ ME FILE INCLUDED WITH THE DOWNLOAD
+
 https://www.youtube.com/watch?v=VeZ-Envz9ME&t=58s
 
 Make sure you launch the game one time before you use this fix, go to new game or continue game, go to video and make sure your resolution is 640 x 480 for the d3d9.dll to work 
