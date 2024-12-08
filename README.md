@@ -20,9 +20,9 @@ Default for aspect ratio is 0 which is (16:9)
 
 The game will start with the origional FOV and you can toggle it to the FOV you select here by pressing the hotkey "9" on your keyboard (not the numpad) and it will toggle between origional and the value in the ini that you choose to zoom out to.
 
-if you would like to leave feedback or submit a bug please use the form provided: 
+If you have any issues please go to discord for help 
 
-https://docs.google.com/forms/d/e/1FAIpQLSe4Lx7bDtZ0R-mtTpd40HamQxvCJWbrzzJ75PnMv7HapJSVjQ/viewform?usp=sharing
+https://discord.gg/pZwkHrTF8X
 
 brought to you by Fix Enhancers 
 
